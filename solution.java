@@ -16,12 +16,15 @@ class Tree {
     public boolean lock(Tree node, int userId) {
         if (node.isLocked) return false;
 
+        //checking if ancestor is locked
         Tree current = node;
         while (current != null) {
             if (current.isLocked) return false;
             current = current.parent;
         }
 
+
+        //checking for desendents
         Queue<Tree> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
@@ -52,6 +55,7 @@ class Tree {
         queue.add(node);
         boolean hasLockedDescendant = false;
 
+        // Check all descendants
         while (!queue.isEmpty()) {
             Tree temp = queue.poll();
             for (Tree child : temp.children) {
@@ -63,8 +67,11 @@ class Tree {
             }
         }
 
+
+        // If no locked descendants, upgrade fails
         if (!hasLockedDescendant) return false;
 
+        // Unlock all descendants
         queue.add(node);
         while (!queue.isEmpty()) {
             Tree temp = queue.poll();
@@ -79,11 +86,11 @@ class Tree {
 }
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main (String[] args) throws InterruptedException {
         Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        int m = sc.nextInt();
-        int q = sc.nextInt();
+        int n = sc.nextInt();//no. of nodes
+        int m = sc.nextInt();//no. of children per node
+        int q = sc.nextInt(); //number of queries
         String rootName = sc.next();
 
         Tree root = new Tree(null);
@@ -105,9 +112,11 @@ public class Main {
                 queue.poll();
             }
             queue.add(node);
+//            System.out.println(nodeMap);
+//            System.out.println(parent);
         }
 
-        Tree tree = new Tree(null);
+//        Tree tree = new Tree(null);
 
         for (int i = 0; i < q; i++) {
             int operationType = sc.nextInt();
@@ -117,11 +126,11 @@ public class Main {
             boolean result = false;
 
             if (operationType == 1) {
-                result = tree.lock(node, userId);
+                result = root.lock(node, userId);
             } else if (operationType == 2) {
-                result = tree.unlock(node, userId);
+                result = root.unlock(node, userId);
             } else if (operationType == 3) {
-                result = tree.upgradeLock(node, userId);
+                result = root.upgradeLock(node, userId);
             }
 
             System.out.println(result ? "true" : "false");
